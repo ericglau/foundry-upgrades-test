@@ -15,17 +15,14 @@ contract MyTokenScript is Script {
     console.log('MSG sender is %s', msg.sender);
 
     vm.startBroadcast();
-    MyToken instance = new MyToken();
-    console.log("Impl: %s", address(instance));
-
-
-    // vm.broadcast();
+    MyToken v1 = new MyToken();
+    console.log("Impl: %s", address(v1));
     
     // Direct
     // ERC1967Proxy proxy = new ERC1967Proxy(address(instance), abi.encodeWithSelector(MyToken.initialize.selector, "hello"));
     
     // UUPS
-    Proxy proxy = Upgrades.deployUUPSProxy(address(instance), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
+    Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
 
     // Transparent
     // Proxy proxy = Upgrades.deployTransparentProxy(address(instance), msg.sender, abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
@@ -34,17 +31,13 @@ contract MyTokenScript is Script {
     // IBeacon beacon = Upgrades.deployBeacon(address(instance), msg.sender);
     // Proxy proxy = Upgrades.deployBeaconProxy(address(beacon), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
 
-    MyToken p2 = MyToken(address(proxy));
+    MyToken instance = MyToken(address(proxy));
 
     console.log("Proxy: %s", address(proxy));
-    console.log("Contract name: %s", p2.name());
-    console.log("greeting: %s", p2.greeting());
-    console.log("owner: %s", p2.owner());
+    console.log("Contract name: %s", instance.name());
+    console.log("greeting: %s", instance.greeting());
+    console.log("owner: %s", instance.owner());
     
-    // vm.setEnv("myenv", "abc");
-    // console.log("Getting env %s", vm.envString("myenv"));
-
-
     MyTokenV2 v2 = new MyTokenV2();
     console.log("Impl V2: %s", address(v2));
 
@@ -52,7 +45,8 @@ contract MyTokenScript is Script {
 
     // ITransparentUpgradeableProxy(address(proxy)).upgradeToAndCall(address(v2), abi.encodeCall(MyTokenV2.resetGreeting, ()));
     Upgrades.upgradeProxy(address(proxy), address(v2), msg.sender, abi.encodeCall(MyTokenV2.resetGreeting, ()));
-    console.log("upgraded greeting: %s", p2.greeting());
+
+    console.log("upgraded greeting: %s", instance.greeting());
 
     console.log("Proxy impl address after upgrade %s", Upgrades.getImplementationAddress(address(proxy)));
 
