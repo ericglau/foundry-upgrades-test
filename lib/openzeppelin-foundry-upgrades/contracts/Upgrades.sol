@@ -17,23 +17,23 @@ import "forge-std/Vm.sol";
 library Upgrades {
   address constant CHEATCODE_ADDRESS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
 
-  function deployUUPSProxy(address impl, bytes memory data) public returns (Proxy) {
+  function deployUUPSProxy(address impl, bytes memory data) internal returns (Proxy) {
     return new ERC1967Proxy(impl, data);
   }
 
-  function deployTransparentProxy(address impl, address initialOwner, bytes memory data) public returns (Proxy) {
+  function deployTransparentProxy(address impl, address initialOwner, bytes memory data) internal returns (Proxy) {
     return new TransparentUpgradeableProxy(impl, initialOwner, data);
   }
 
-  function deployBeacon(address impl, address initialOwner) public returns (IBeacon) {
+  function deployBeacon(address impl, address initialOwner) internal returns (IBeacon) {
     return new UpgradeableBeacon(impl, initialOwner);
   }
 
-  function deployBeaconProxy(address beacon, bytes memory data) public returns (Proxy) {
+  function deployBeaconProxy(address beacon, bytes memory data) internal returns (Proxy) {
     return new BeaconProxy(beacon, data);
   }
 
-  function upgradeProxy(address proxy, address newImpl, address owner, bytes memory data) public broadcast(owner) {
+  function upgradeProxy(address proxy, address newImpl, address owner, bytes memory data) internal broadcast(owner) {
     Vm vm = Vm(CHEATCODE_ADDRESS);
 
     bytes32 adminSlot = vm.load(proxy, ERC1967Utils.ADMIN_SLOT);
@@ -46,11 +46,11 @@ library Upgrades {
     }
   }
 
-  function upgradeBeacon(address beacon, address newImpl, address owner) public broadcast(owner) {
+  function upgradeBeacon(address beacon, address newImpl, address owner) internal broadcast(owner) {
     UpgradeableBeacon(beacon).upgradeTo(newImpl);
   }
 
-  function getImplementationAddress(address proxy) public view returns (address) {
+  function getImplementationAddress(address proxy) internal view returns (address) {
     Vm vm = Vm(CHEATCODE_ADDRESS);
 
     bytes32 implSlot = vm.load(proxy, ERC1967Utils.IMPLEMENTATION_SLOT);
