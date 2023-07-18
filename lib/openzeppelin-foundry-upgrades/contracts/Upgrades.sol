@@ -33,48 +33,21 @@ library Upgrades {
     return new BeaconProxy(beacon, data);
   }
 
-  function upgradeProxy(address proxy, address newImpl, address owner, bytes memory data) public {
+  function upgradeProxy(address proxy, address newImpl, address owner, bytes memory data) public broadcast(owner) {
     Vm vm = Vm(CHEATCODE_ADDRESS);
-
-    bool wasBroadcasting = false;
-    try vm.stopBroadcast() {
-      wasBroadcasting = true;
-    } catch {
-      // ignore
-    }
 
     bytes32 adminSlot = vm.load(proxy, ERC1967Utils.ADMIN_SLOT);
     if (adminSlot == bytes32(0)) {
       // No admin contract: upgrade directly using interface
-      vm.broadcast(owner);
       ITransparentUpgradeableProxy(proxy).upgradeToAndCall(newImpl, data);
     } else {
       ProxyAdmin admin = ProxyAdmin(address(uint160(uint256(adminSlot))));
-      vm.broadcast(owner);
       admin.upgradeAndCall(ITransparentUpgradeableProxy(proxy), newImpl, data);
-    }
-
-    if (wasBroadcasting) {
-      vm.startBroadcast(msg.sender);
     }
   }
 
-  function upgradeBeacon(address beacon, address newImpl, address owner) public {
-    Vm vm = Vm(CHEATCODE_ADDRESS);
-
-    bool wasBroadcasting = false;
-    try vm.stopBroadcast() {
-      wasBroadcasting = true;
-    } catch {
-      // ignore
-    }
-
-    vm.broadcast(owner);
+  function upgradeBeacon(address beacon, address newImpl, address owner) public broadcast(owner) {
     UpgradeableBeacon(beacon).upgradeTo(newImpl);
-
-    if (wasBroadcasting) {
-      vm.startBroadcast(msg.sender);
-    }
   }
 
   function getImplementationAddress(address proxy) public view returns (address) {
@@ -82,5 +55,24 @@ library Upgrades {
 
     bytes32 implSlot = vm.load(proxy, ERC1967Utils.IMPLEMENTATION_SLOT);
     return address(uint160(uint256(implSlot)));
+  }
+
+  modifier broadcast(address deployer) {
+    Vm vm = Vm(CHEATCODE_ADDRESS);
+
+    bool wasBroadcasting = false;
+    try vm.stopBroadcast() {
+      wasBroadcasting = true;
+    } catch {
+      // ignore
+    }
+
+    vm.startBroadcast(deployer);
+    _;
+    vm.stopBroadcast();
+    
+    if (wasBroadcasting) {
+      vm.startBroadcast(msg.sender);
+    }
   }
 }
