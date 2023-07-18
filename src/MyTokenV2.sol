@@ -6,9 +6,8 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-import {console as c1} from "forge-std/Console.sol";
 
-contract MyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract MyTokenV2 is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgradeable {
     string public greeting;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -21,21 +20,15 @@ contract MyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpg
         __Ownable_init(initialOwner);
         __UUPSUpgradeable_init();
         greeting = _greeting;
-        // c1.log('owner: %s', owner());
-        // c1.log('msg sender: %s', msg.sender);
     }
 
     function _authorizeUpgrade(address newImplementation)
         internal
         onlyOwner
         override
-    {
-        c1.log('owner: %s', owner());
-        c1.log('msg sender: %s', _msgSender());
+    {}
 
+    function resetGreeting() public {
+        greeting = "resetted";
     }
-
-    // function _msgSender() internal override view virtual returns (address) {
-    //     return tx.origin;
-    // }
 }
