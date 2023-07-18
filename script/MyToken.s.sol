@@ -14,7 +14,7 @@ contract MyTokenScript is Script {
     console.log("Contract deployed to %s", address(instance));
 
     // ERC1967Proxy proxy = new ERC1967Proxy(address(instance), abi.encodeWithSelector(MyToken.initialize.selector, "hello"));
-   ERC1967Proxy proxy = new ERC1967Proxy(address(instance), abi.encodeCall(MyToken.initialize, "hello"));
+    ERC1967Proxy proxy = new ERC1967Proxy(address(instance), abi.encodeCall(MyToken.initialize, "hello"));
 
     MyToken p2 = MyToken(address(proxy));
 
