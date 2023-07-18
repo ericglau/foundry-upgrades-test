@@ -16,15 +16,15 @@ contract MyTokenScript is Script {
 
     vm.broadcast();
     MyToken instance = new MyToken();
-    console.log("Contract deployed to %s", address(instance));
+    console.log("Impl: %s", address(instance));
 
 
+    vm.broadcast();
     
     // Direct
     // ERC1967Proxy proxy = new ERC1967Proxy(address(instance), abi.encodeWithSelector(MyToken.initialize.selector, "hello"));
     
     // UUPS
-    vm.broadcast();
     Proxy proxy = Upgrades.deployUUPSProxy(address(instance), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
 
     // Transparent
@@ -36,20 +36,27 @@ contract MyTokenScript is Script {
 
     MyToken p2 = MyToken(address(proxy));
 
+    console.log("Proxy: %s", address(proxy));
     console.log("Contract name: %s", p2.name());
     console.log("greeting: %s", p2.greeting());
     console.log("owner: %s", p2.owner());
     
-    vm.setEnv("myenv", "abc");
-    console.log("Getting env %s", vm.envString("myenv"));
+    // vm.setEnv("myenv", "abc");
+    // console.log("Getting env %s", vm.envString("myenv"));
 
 
     MyTokenV2 v2 = new MyTokenV2();
+    console.log("Impl V2: %s", address(v2));
 
     // ITransparentUpgradeableProxy(address(proxy)).upgradeToAndCall(address(v2), abi.encodeCall(MyTokenV2.resetGreeting, ()));
+
+    console.log("Proxy impl address before upgrade %s", Upgrades.getImplementationAddress(address(proxy)));
 
     Upgrades.upgradeProxy(address(proxy), address(v2), msg.sender, abi.encodeCall(MyTokenV2.resetGreeting, ()));
     console.log("upgraded greeting: %s", p2.greeting());
 
+    console.log("Proxy impl address after upgrade %s", Upgrades.getImplementationAddress(address(proxy)));
+
+    // vm.stopBroadcast();
   }
 }
