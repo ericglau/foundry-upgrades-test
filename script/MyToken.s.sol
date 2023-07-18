@@ -25,7 +25,7 @@ contract MyTokenScript is Script {
     Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
 
     // Transparent
-    // Proxy proxy = Upgrades.deployTransparentProxy(address(instance), msg.sender, abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
+    // Proxy proxy = Upgrades.deployTransparentProxy(address(v1), msg.sender, abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
     
     // Beacon
     // IBeacon beacon = Upgrades.deployBeacon(address(instance), msg.sender);
