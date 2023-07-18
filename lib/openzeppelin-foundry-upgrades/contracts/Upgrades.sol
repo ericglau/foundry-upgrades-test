@@ -17,6 +17,8 @@ import "forge-std/Vm.sol";
 import {console as c2} from "forge-std/Console.sol";
 
 library Upgrades {
+  address constant CHEATCODE_ADDRESS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
+
   function deployUUPSProxy(address impl, bytes memory data) public returns (Proxy) {
     return new ERC1967Proxy(impl, data);
   }
@@ -34,7 +36,14 @@ library Upgrades {
   }
 
   function upgradeProxy(address proxy, address newImpl, address owner, bytes memory data) public {
-    Vm vm = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+    Vm vm = Vm(CHEATCODE_ADDRESS);
+
+    bool wasBroadcasting = false;
+    try vm.stopBroadcast() {
+      wasBroadcasting = true;
+    } catch {
+      // ignore
+    }
 
     bytes32 adminSlot = vm.load(proxy, ERC1967Utils.ADMIN_SLOT);
     if (adminSlot == bytes32(0)) {
@@ -46,10 +55,14 @@ library Upgrades {
       vm.broadcast(owner);
       admin.upgradeAndCall(ITransparentUpgradeableProxy(proxy), newImpl, data);
     }
+
+    if (wasBroadcasting) {
+      vm.startBroadcast(msg.sender);
+    }
   }
 
   function getImplementationAddress(address proxy) public view returns (address) {
-    Vm vm = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+    Vm vm = Vm(CHEATCODE_ADDRESS);
 
     bytes32 implSlot = vm.load(proxy, ERC1967Utils.IMPLEMENTATION_SLOT);
     return address(uint160(uint256(implSlot)));

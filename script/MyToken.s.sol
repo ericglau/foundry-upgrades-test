@@ -14,12 +14,12 @@ contract MyTokenScript is Script {
 
     console.log('MSG sender is %s', msg.sender);
 
-    vm.broadcast();
+    vm.startBroadcast();
     MyToken instance = new MyToken();
     console.log("Impl: %s", address(instance));
 
 
-    vm.broadcast();
+    // vm.broadcast();
     
     // Direct
     // ERC1967Proxy proxy = new ERC1967Proxy(address(instance), abi.encodeWithSelector(MyToken.initialize.selector, "hello"));
@@ -48,15 +48,14 @@ contract MyTokenScript is Script {
     MyTokenV2 v2 = new MyTokenV2();
     console.log("Impl V2: %s", address(v2));
 
-    // ITransparentUpgradeableProxy(address(proxy)).upgradeToAndCall(address(v2), abi.encodeCall(MyTokenV2.resetGreeting, ()));
-
     console.log("Proxy impl address before upgrade %s", Upgrades.getImplementationAddress(address(proxy)));
 
+    // ITransparentUpgradeableProxy(address(proxy)).upgradeToAndCall(address(v2), abi.encodeCall(MyTokenV2.resetGreeting, ()));
     Upgrades.upgradeProxy(address(proxy), address(v2), msg.sender, abi.encodeCall(MyTokenV2.resetGreeting, ()));
     console.log("upgraded greeting: %s", p2.greeting());
 
     console.log("Proxy impl address after upgrade %s", Upgrades.getImplementationAddress(address(proxy)));
 
-    // vm.stopBroadcast();
+    vm.stopBroadcast();
   }
 }
