@@ -61,6 +61,24 @@ library Upgrades {
     }
   }
 
+  function upgradeBeacon(address beacon, address newImpl, address owner) public {
+    Vm vm = Vm(CHEATCODE_ADDRESS);
+
+    bool wasBroadcasting = false;
+    try vm.stopBroadcast() {
+      wasBroadcasting = true;
+    } catch {
+      // ignore
+    }
+
+    vm.broadcast(owner);
+    UpgradeableBeacon(beacon).upgradeTo(newImpl);
+
+    if (wasBroadcasting) {
+      vm.startBroadcast(msg.sender);
+    }
+  }
+
   function getImplementationAddress(address proxy) public view returns (address) {
     Vm vm = Vm(CHEATCODE_ADDRESS);
 
