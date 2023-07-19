@@ -31,7 +31,7 @@ contract MyTokenScript is Script {
     // UUPS with Options
     // ERC1967Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)), opts);
 
-    // UUPS with env options
+    // UUPS with env options. The drawback compared to Options contract is that these env vars do not get cleared between calls, so has more possibility for user error.
     vm.setEnv(Options.usePlatformDeploy, 'true');
     ERC1967Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
 
