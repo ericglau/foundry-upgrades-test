@@ -21,6 +21,15 @@ library Upgrades {
   function deployUUPSProxy(address impl, bytes memory data, Options opts) internal returns (ERC1967Proxy) {
     if (opts.usePlatformDeploy()) {
       console.log("Using platform for deployUUPSProxy");
+
+      // TODO call a platform command to deploy
+      string[] memory inputs = new string[](3);
+      inputs[0] = "echo";
+      inputs[1] = "-n";
+      inputs[2] = "0x123";
+
+      bytes memory res = Vm(CHEATCODE_ADDRESS).ffi(inputs);
+      console.log("res: %s", string(res));
     }
     // TODO else
     return new ERC1967Proxy(impl, data);
