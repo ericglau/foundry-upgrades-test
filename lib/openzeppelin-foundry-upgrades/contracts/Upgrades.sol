@@ -13,15 +13,20 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 import "./Options.sol";
 
 import "forge-std/Vm.sol";
+import {console} from "forge-std/Console.sol";
 
 library Upgrades {
   address constant CHEATCODE_ADDRESS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
 
-  function deployUUPSProxy(address impl, bytes memory data) internal returns (Proxy) {
+  function deployUUPSProxy(address impl, bytes memory data, Options opts) internal returns (ERC1967Proxy) {
+    if (opts.usePlatformDeploy()) {
+      console.log("Using platform for deployUUPSProxy");
+    }
+    // TODO else
     return new ERC1967Proxy(impl, data);
   }
 
-  function deployTransparentProxy(address impl, address initialOwner, bytes memory data) internal returns (Proxy) {
+  function deployTransparentProxy(address impl, address initialOwner, bytes memory data) internal returns (TransparentUpgradeableProxy) {
     return new TransparentUpgradeableProxy(impl, initialOwner, data);
   }
 
@@ -29,7 +34,7 @@ library Upgrades {
     return new UpgradeableBeacon(impl, initialOwner);
   }
 
-  function deployBeaconProxy(address beacon, bytes memory data) internal returns (Proxy) {
+  function deployBeaconProxy(address beacon, bytes memory data) internal returns (BeaconProxy) {
     return new BeaconProxy(beacon, data);
   }
 

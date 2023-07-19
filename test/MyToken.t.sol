@@ -4,7 +4,10 @@ pragma solidity ^0.8.9;
 import "forge-std/Test.sol";
 import "../src/MyToken.sol";
 import "../src/MyTokenV2.sol";
-import "@openzeppelin/foundry-upgrades/Upgrades.sol";
+import {Upgrades} from "@openzeppelin/foundry-upgrades/Upgrades.sol";
+import {Options} from "@openzeppelin/foundry-upgrades/Options.sol";
+import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
+import {IBeacon} from "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
 contract MyTokenTest is Test {
   MyToken public v1;
@@ -14,7 +17,7 @@ contract MyTokenTest is Test {
   }
 
   function testUUPS() public {
-    Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
+    Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)), new Options());
     MyToken instance = MyToken(address(proxy));
 
     assertEq(instance.name(), "MyToken");
