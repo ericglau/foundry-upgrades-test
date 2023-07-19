@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import "../src/MyToken.sol";
 import "../src/MyTokenV2.sol";
 import {Upgrades} from "@openzeppelin/foundry-upgrades/Upgrades.sol";
-import {Options} from "@openzeppelin/foundry-upgrades/Options.sol";
+import "@openzeppelin/foundry-upgrades/Options.sol";
 
 import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -18,8 +18,8 @@ contract MyTokenScript is Script {
     console.log('MSG sender is %s', msg.sender);
 
     // Since opts is a contract, it needs to be created outside of a broadcast
-    Options opts = new Options();
-    opts.setUsePlatformDeploy(true);
+    // Options opts = new Options();
+    // opts.setUsePlatformDeploy(true);
 
     vm.startBroadcast();
     MyToken v1 = new MyToken();
@@ -28,8 +28,12 @@ contract MyTokenScript is Script {
     // Direct
     // ERC1967Proxy proxy = new ERC1967Proxy(address(instance), abi.encodeWithSelector(MyToken.initialize.selector, "hello"));
     
-    // UUPS
-    ERC1967Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)), opts);
+    // UUPS with Options
+    // ERC1967Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)), opts);
+
+    // UUPS with env options
+    vm.setEnv(Options.usePlatformDeploy, 'true');
+    ERC1967Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
 
     // Transparent
     // Proxy proxy = Upgrades.deployTransparentProxy(address(v1), msg.sender, abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));

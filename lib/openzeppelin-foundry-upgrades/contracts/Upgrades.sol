@@ -18,8 +18,29 @@ import {console} from "forge-std/Console.sol";
 library Upgrades {
   address constant CHEATCODE_ADDRESS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
 
-  function deployUUPSProxy(address impl, bytes memory data, Options opts) internal returns (ERC1967Proxy) {
-    if (opts.usePlatformDeploy()) {
+  // Use Options
+  // function deployUUPSProxy(address impl, bytes memory data, Options opts) internal returns (ERC1967Proxy) {
+  //   if (opts.usePlatformDeploy()) {
+  //     console.log("Using platform for deployUUPSProxy");
+
+  //     // TODO call a platform command to deploy
+  //     string[] memory inputs = new string[](3);
+  //     inputs[0] = "echo";
+  //     inputs[1] = "-n";
+  //     inputs[2] = "0x123";
+
+  //     bytes memory res = Vm(CHEATCODE_ADDRESS).ffi(inputs);
+  //     console.log("res: %s", string(res));
+  //   }
+  //   // TODO else
+  //   return new ERC1967Proxy(impl, data);
+  // }
+
+  // Use env variable for options
+  function deployUUPSProxy(address impl, bytes memory data) internal returns (ERC1967Proxy) {
+    Vm vm = Vm(CHEATCODE_ADDRESS);
+
+    if (vm.envOr(Options.usePlatformDeploy, false)) {
       console.log("Using platform for deployUUPSProxy");
 
       // TODO call a platform command to deploy
@@ -28,7 +49,7 @@ library Upgrades {
       inputs[1] = "-n";
       inputs[2] = "0x123";
 
-      bytes memory res = Vm(CHEATCODE_ADDRESS).ffi(inputs);
+      bytes memory res = vm.ffi(inputs);
       console.log("res: %s", string(res));
     }
     // TODO else

@@ -17,7 +17,7 @@ contract MyTokenTest is Test {
   }
 
   function testUUPS() public {
-    Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)), new Options());
+    Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
     MyToken instance = MyToken(address(proxy));
 
     assertEq(instance.name(), "MyToken");
