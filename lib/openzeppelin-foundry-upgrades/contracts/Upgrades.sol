@@ -50,6 +50,9 @@ library Upgrades {
     UpgradeableBeacon(beacon).upgradeTo(newImpl);
   }
 
+  // prepareUpgrade is not needed if user deploys implementations directly,
+  // but consider it if we want to automatically perform safety checks
+
   function getImplementationAddress(address proxy) internal view returns (address) {
     Vm vm = Vm(CHEATCODE_ADDRESS);
 
