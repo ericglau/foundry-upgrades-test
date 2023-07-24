@@ -40,9 +40,21 @@ library Upgrades {
   function validateImplementation(string memory contractName) internal {
     // TODO
     // Enhance upgrades core to support passing in a specific contract name to validate, and filter results for that contract only
+      string[] memory inputs = new string[](3);
+      inputs[0] = "npx";
+      inputs[1] = "@openzeppelin/upgrades-core@latest";
+      inputs[2] = "validate";
+      // TODO pass in validation options from environment variables
+      // TODO customize build info dir based on foundry.toml (if not default)
+
+      bytes memory res = Vm(CHEATCODE_ADDRESS).ffi(inputs);
+      console.log("res: %s", string(res));
+
   }
 
   function deployImplementation(string memory contractName) internal returns (address) {
+    validateImplementation(contractName);
+
     bytes memory code = Vm(CHEATCODE_ADDRESS).getCode(contractName);
     return deployFromBytecode(code);
   }
