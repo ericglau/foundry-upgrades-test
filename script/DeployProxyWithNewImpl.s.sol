@@ -22,7 +22,6 @@ contract MyTokenScript is Script {
     // opts.setUsePlatformDeploy(true);
 
     vm.startBroadcast();
-    
     // MyToken v1 = new MyToken();
     // console.log("Impl: %s", address(v1));
     
