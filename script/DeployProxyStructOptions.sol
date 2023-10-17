@@ -60,6 +60,8 @@ contract MyTokenScript is Script {
 
     console.log("Proxy impl address before upgrade %s", Upgrades.getImplementationAddress(address(proxy)));
 
+    console.log('msg.sender in script is %s', msg.sender);
+
     // ITransparentUpgradeableProxy(address(proxy)).upgradeToAndCall(address(v2), abi.encodeCall(MyTokenV2.resetGreeting, ()));
     Upgrades.upgradeProxy(address(proxy), address(v2), msg.sender, abi.encodeCall(MyTokenV2.resetGreeting, ()));
 
@@ -70,3 +72,7 @@ contract MyTokenScript is Script {
     vm.stopBroadcast();
   }
 }
+
+
+
+

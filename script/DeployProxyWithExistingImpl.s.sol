@@ -26,13 +26,17 @@ contract MyTokenScript is Script {
     console.log("Impl: %s", address(v1));
     
     // Direct
-    // ERC1967Proxy proxy = new ERC1967Proxy(address(instance), abi.encodeWithSelector(MyToken.initialize.selector, "hello"));
+    // ERC1967Proxy proxy = new ERC1967Proxy(address(v1), abi.encodeWithSelector(MyToken.initialize.selector, "hello", msg.sender));
     
     // UUPS with Options
     // ERC1967Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)), opts);
 
     // UUPS with env options. The drawback compared to Options contract is that these env vars do not get cleared between calls, so has more possibility for user error.
-    vm.setEnv(Options.usePlatformDeploy, 'true');
+    // vm.setEnv(Options.usePlatformDeploy, 'true');
+    // ERC1967Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
+
+    // Get creation bytecode: type(MyContract).creationCode
+
     ERC1967Proxy proxy = Upgrades.deployUUPSProxy(address(v1), abi.encodeCall(MyToken.initialize, ("hello", msg.sender)));
 
     // Transparent

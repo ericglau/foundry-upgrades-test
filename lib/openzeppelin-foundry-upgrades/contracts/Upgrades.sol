@@ -8,9 +8,9 @@ import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/Proxy.sol";
 
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
-
 import "./Options.sol";
+
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
 import "forge-std/Vm.sol";
 import {console} from "forge-std/Console.sol";
